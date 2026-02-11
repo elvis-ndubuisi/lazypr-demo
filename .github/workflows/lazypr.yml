@@ -1,0 +1,63 @@
+name: lazyPR Demo
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  lazypr:
+    name: Generate PR Summary
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Run lazyPR (Marketplace v1.2.1)
+        id: lazypr
+        uses: elvis-ndubuisi/lazypr@v1.2.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          api_key: ${{ secrets.GEMINI_API_KEY }}
+          provider: gemini
+          # Enable all Batch 1 features
+          ticket_pattern: "[A-Z]+-\\d+"
+          ticket_url_template: "https://github.com/${{ github.repository }}/issues/{{id}}"
+          auto_update_title: true
+          pr_size_warning: "500"
+          pr_size_block: "2000"
+          custom_placeholders: |
+            {
+              "{{demoContext}}": "This is a demo PR for lazyPR showcase"
+            }
+
+      - name: Display lazyPR Outputs
+        run: |
+          echo "========================================"
+          echo "🚀 lazyPR Analysis Complete"
+          echo "========================================"
+          echo ""
+          echo "📊 PR Metrics:"
+          echo "  • Risk Level: ${{ steps.lazypr.outputs.risk_level }}"
+          echo "  • Impact Score: ${{ steps.lazypr.outputs.impact_score }}"
+          echo "  • Lines Changed: ${{ steps.lazypr.outputs.pr_size_lines }}"
+          echo "  • Size Warning: ${{ steps.lazypr.outputs.pr_size_warning_triggered }}"
+          echo "  • Size Blocked: ${{ steps.lazypr.outputs.pr_size_blocked }}"
+          echo ""
+          echo "🎫 Related Tickets:"
+          echo "${{ steps.lazypr.outputs.related_tickets }}"
+          echo ""
+          echo "✏️ Title Enhanced:"
+          echo "${{ steps.lazypr.outputs.enhanced_title }}"
+          echo ""
+          echo "👻 Ghost Commits:"
+          echo "${{ steps.lazypr.outputs.has_ghost_commits }}"
+          echo ""
+          echo "📝 Summary Preview:"
+          echo "${{ steps.lazypr.outputs.summary }}" | head -20
+          echo ""
+          echo "========================================"
