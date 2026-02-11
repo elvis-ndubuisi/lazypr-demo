@@ -1,0 +1,1 @@
+../lazypr/FEATURE_TESTING_GUIDE.md
