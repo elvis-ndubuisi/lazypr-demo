@@ -7,6 +7,8 @@ package-lock.json
 yarn.lock
 
 # Environment variables
+.env
+.env.local
 .env.*.local
 
 # IDE
@@ -32,4 +34,3 @@ coverage/
 dist/
 build/
 *.tgz
-config.bat
